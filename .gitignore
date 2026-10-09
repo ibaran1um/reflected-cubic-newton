@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+
+# raw logs are not committed; only aggregated CSVs and figures under results/
+results/raw/
+*.log
+
+# working spec with internal notes; kept outside the public repo
+SPEC.md

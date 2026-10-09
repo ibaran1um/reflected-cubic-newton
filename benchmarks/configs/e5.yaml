@@ -1,0 +1,36 @@
+# E5 joint vs greedy: where along the first iterations do they separate?
+# D_method(k) / D_cn(k) for k = 1..10. The table setting is where E1 found a
+# larger iteration saving for greedy (cubic 1.0); the production setting uses
+# the default eta and M multiples. E2 runs (all problems) complement this.
+name: e5
+
+_methods: &methods_inf
+  - {name: cn, method: cn}
+  - {name: rcn_joint, method: rcn, mode: joint, eta: .inf}
+  - {name: rcn_greedy, method: rcn, mode: greedy, eta: .inf}
+
+_methods_def: &methods_def
+  - {name: cn, method: cn}
+  - {name: rcn_joint, method: rcn, mode: joint, eta: 0.5}
+  - {name: rcn_greedy, method: rcn, mode: greedy, eta: 0.5}
+
+groups:
+  - label: table_setting
+    problem: saddle_tensor
+    grid: {cubic: [0.3, 1.0], n_neg: [3, 5]}
+    fixed: {n: 20, c: 1.0, start_scale: 1.0e-6}
+    M: {absolute: [3.0, 10.0]}
+    methods: *methods_inf
+    solver: {eps_g: 1.0e-8, lam_tol: 1.0e-4, max_iter: 200}
+    seeds: {start: 0, count: 1000}
+    save_iters: false
+  - label: production
+    problem: saddle_tensor
+    R: auto
+    grid: {cubic: [0.3, 1.0], n_neg: [3, 5]}
+    fixed: {n: 20, c: 1.0, start_scale: 1.0e-6}
+    M: {lipschitz_multiple: [1.0, 3.0]}
+    methods: *methods_def
+    solver: {eps_g: 1.0e-8, max_iter: 200}
+    seeds: {start: 0, count: 300}
+    save_iters: false

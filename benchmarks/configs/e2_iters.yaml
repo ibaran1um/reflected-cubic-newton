@@ -1,0 +1,42 @@
+# E2 secondary metric: iterations to a second-order point, one condition per
+# problem (M = 3 x L-hat), 500 seeds. Report the paired difference against CN
+# with a bootstrap 95% CI; no shortening is claimed where the CI contains 0.
+name: e2_iters
+
+_methods: &methods
+  - {name: cn, method: cn}
+  - {name: rcn_joint, method: rcn, mode: joint, eta: 0.5}
+  - {name: rcn_greedy, method: rcn, mode: greedy, eta: 0.5}
+  - {name: arc, method: arc}
+  - {name: nc_pm, method: nc_pm}
+
+_common: &common
+  R: auto
+  M: {lipschitz_multiple: [3.0]}
+  methods: *methods
+  solver: {eps_g: 1.0e-8, max_iter: 200}
+  seeds: {start: 0, count: 500}
+  save_iters: false
+
+groups:
+  - <<: *common
+    label: saddle_tensor
+    problem: saddle_tensor
+    fixed: {n: 20, n_neg: 3, cubic: 1.0, c: 1.0, start_scale: 1.0e-6}
+  - <<: *common
+    label: matrix_factorization
+    problem: matrix_factorization
+    fixed: {d: 20, r: 2, start_scale: 1.0e-3}
+  - <<: *common
+    label: phase_retrieval
+    problem: phase_retrieval
+    fixed: {n: 20, m: 100, start_scale: 1.0e-3}
+  - <<: *common
+    label: small_mlp
+    problem: small_mlp
+    fixed: {d_in: 5, hidden: 20, n_data: 200, start_scale: 1.0e-3}
+  - <<: *common
+    label: test_functions
+    problem: test_functions
+    grid: {fn: [himmelblau, cubic_saddle]}
+    fixed: {start_scale: 1.0e-6}

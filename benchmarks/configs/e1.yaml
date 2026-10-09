@@ -1,0 +1,46 @@
+# E1: reproduce the preliminary table and sweep M / cubic size on saddle_tensor.
+name: e1
+groups:
+  # Same settings as the NumPy prototype (rcn_proto.py), for comparison with the
+  # SPEC section 1 table: absolute M, no activation rule (eta = inf),
+  # stop at ||g|| <= 1e-8 and lam_min >= -1e-4, 100 problems.
+  # Compare means only: the random streams differ from NumPy.
+  - label: table_repro
+    problem: saddle_tensor
+    grid: {cubic: [0.3, 1.0]}
+    fixed: {n: 20, n_neg: 3, c: 1.0, start_scale: 1.0e-6}
+    M: {absolute: [3.0, 10.0]}
+    methods:
+      - {name: cn, method: cn}
+      - {name: rcn_joint, method: rcn, mode: joint, eta: .inf}
+      - {name: rcn_greedy, method: rcn, mode: greedy, eta: .inf}
+    solver: {eps_g: 1.0e-8, lam_tol: 1.0e-4, max_iter: 200}
+    seeds: {start: 0, count: 100}
+
+  # Same as table_repro with 1000 problems, to pin down the population mean.
+  - label: table_repro_1000
+    problem: saddle_tensor
+    grid: {cubic: [0.3, 1.0]}
+    fixed: {n: 20, n_neg: 3, c: 1.0, start_scale: 1.0e-6}
+    M: {absolute: [3.0, 10.0]}
+    methods:
+      - {name: cn, method: cn}
+      - {name: rcn_joint, method: rcn, mode: joint, eta: .inf}
+      - {name: rcn_greedy, method: rcn, mode: greedy, eta: .inf}
+    solver: {eps_g: 1.0e-8, lam_tol: 1.0e-4, max_iter: 200}
+    seeds: {start: 0, count: 1000}
+    save_iters: false
+
+  # Production settings (SPEC 4): M = {1, 3, 10} x L-hat, default eta,
+  # default stopping rule lam_min >= -sqrt(M eps_g).
+  - label: main
+    problem: saddle_tensor
+    grid: {n: [20, 50, 100], n_neg: [1, 3, 5], cubic: [0.3, 1.0]}
+    fixed: {c: 1.0, start_scale: 1.0e-6, R: 1.0}
+    M: {lipschitz_multiple: [1.0, 3.0, 10.0]}
+    methods:
+      - {name: cn, method: cn}
+      - {name: rcn_joint, method: rcn, mode: joint, eta: 0.5}
+      - {name: rcn_greedy, method: rcn, mode: greedy, eta: 0.5}
+    solver: {eps_g: 1.0e-8, max_iter: 200}
+    seeds: {start: 0, count: 50}

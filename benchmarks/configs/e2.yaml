@@ -1,0 +1,48 @@
+# E2 main comparison. Primary metric: cumulative decrease D(k) = f(x0) - f(x_k)
+# relative to CN on the same problem and start, k = 1, 3, 5 (mean / median with
+# bootstrap 95% CI, share of problems improved by >= 1%). Costs (n_f, n_hess,
+# time) are reported as medians and IQR. Iteration counts are secondary: see e2_iters.yaml.
+name: e2
+
+_methods: &methods
+  - {name: cn, method: cn}
+  - {name: rcn_joint, method: rcn, mode: joint, eta: 0.1}
+  - {name: rcn_greedy, method: rcn, mode: greedy, eta: 0.1}
+  - {name: arc, method: arc}
+  - {name: nc_pm, method: nc_pm}
+
+_common: &common
+  R: auto  # ball radius for L-hat: covers the first CN step at M = L-hat
+  M: {lipschitz_multiple: [1.0, 3.0, 10.0]}
+  methods: *methods
+  solver: {eps_g: 1.0e-8, max_iter: 200}
+  seeds: {start: 0, count: 100}
+  save_iters: false
+
+groups:
+  - <<: *common
+    label: saddle_tensor
+    problem: saddle_tensor
+    grid: {n: [20, 50, 100], cubic: [0.3, 1.0]}
+    fixed: {n_neg: 3, c: 1.0, start_scale: 1.0e-6}
+  - <<: *common
+    label: matrix_factorization
+    problem: matrix_factorization
+    fixed: {d: 20, r: 2, start_scale: 1.0e-3}
+  - <<: *common
+    label: phase_retrieval
+    problem: phase_retrieval
+    fixed: {n: 20, m: 100, start_scale: 1.0e-3}
+  # M = 1 x L-hat is left out for small_mlp: there L-hat underestimates the
+  # Hessian Lipschitz constant (CN itself increased f in 14-48 of 100 runs),
+  # so the cubic model is not an upper bound. A setup issue, not RCN's.
+  - <<: *common
+    label: small_mlp
+    problem: small_mlp
+    fixed: {d_in: 5, hidden: 20, n_data: 200, start_scale: 1.0e-3}
+    M: {lipschitz_multiple: [3.0, 10.0]}
+  - <<: *common
+    label: test_functions
+    problem: test_functions
+    grid: {fn: [himmelblau, cubic_saddle]}
+    fixed: {start_scale: 1.0e-6}

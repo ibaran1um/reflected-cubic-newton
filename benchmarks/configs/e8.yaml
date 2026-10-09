@@ -1,0 +1,42 @@
+# E8: does the reflection still add on top of ARC? ARC vs ARC + reflected
+# candidates (rarc, joint, eta = 0.1) under the E2 conditions. D(k) ratios are
+# paired against plain ARC on the same problem, start and initial M.
+name: e8
+
+_methods: &methods
+  - {name: arc, method: arc}
+  - {name: rarc_joint, method: rarc, mode: joint, eta: 0.1}
+
+_common: &common
+  reference: arc
+  R: auto
+  M: {lipschitz_multiple: [1.0, 3.0, 10.0]}
+  methods: *methods
+  solver: {eps_g: 1.0e-8, max_iter: 200}
+  seeds: {start: 0, count: 100}
+  save_iters: false
+
+groups:
+  - <<: *common
+    label: saddle_tensor
+    problem: saddle_tensor
+    grid: {n: [20, 50, 100], cubic: [0.3, 1.0]}
+    fixed: {n_neg: 3, c: 1.0, start_scale: 1.0e-6}
+  - <<: *common
+    label: matrix_factorization
+    problem: matrix_factorization
+    fixed: {d: 20, r: 2, start_scale: 1.0e-3}
+  - <<: *common
+    label: phase_retrieval
+    problem: phase_retrieval
+    fixed: {n: 20, m: 100, start_scale: 1.0e-3}
+  - <<: *common
+    label: small_mlp
+    problem: small_mlp
+    fixed: {d_in: 5, hidden: 20, n_data: 200, start_scale: 1.0e-3}
+    M: {lipschitz_multiple: [3.0, 10.0]}
+  - <<: *common
+    label: test_functions
+    problem: test_functions
+    grid: {fn: [himmelblau, cubic_saddle]}
+    fixed: {start_scale: 1.0e-6}
