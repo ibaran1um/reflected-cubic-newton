@@ -205,7 +205,7 @@ Aggregated CSV files and figures are in `results/`. L̂ is cached in `results/ra
 
 ## Related work
 
-To our knowledge, as of October 2026 the same method has not been published: we found no prior work that reflects part of a cubic-regularized Newton step. The closest idea is choosing the sign of a negative-curvature direction ±q by comparing two function values; that idea applies to the curvature direction alone rather than to the CN step.
+To my knowledge, as of October 2026 the same method has not been published: I found no prior work that reflects part of a cubic-regularized Newton step. The closest idea is choosing the sign of a negative-curvature direction ±q by comparing two function values; that idea applies to the curvature direction alone rather than to the CN step.
 
 - Y. Nesterov, B. T. Polyak. [Cubic regularization of Newton method and its global performance](https://doi.org/10.1007/s10107-006-0706-8). Mathematical Programming 108(1):177–205, 2006. — The base CN method.
 - C. Cartis, N. I. M. Gould, Ph. L. Toint. [Adaptive cubic regularisation methods for unconstrained optimization. Part I: motivation, convergence and numerical results](https://doi.org/10.1007/s10107-009-0286-5). Mathematical Programming 127(2):245–295, 2011. — The `arc` baseline.
